@@ -1,6 +1,8 @@
 from flask import Flask, request
 from flask_cors import CORS, cross_origin
 
+from scrapper import scrape, urlExists
+
 app = Flask(__name__)
 CORS(app, support_credentials=True)
 
@@ -9,6 +11,26 @@ CORS(app, support_credentials=True)
 def hello_world():
     return 'Hello World!'
 
+
+@app.route('/scrape', methods=['POST'])
+@cross_origin(supports_credentials=True)
+def scrapeURL():
+    data = request.json
+    url = data['url']
+    response = dict()
+    if urlExists(url):
+        image_urls = scrape(url)
+        if len(image_urls) > 0:
+            response['success'] = True
+            response['output'] = image_urls
+        else:
+            response['success'] = False
+            response['output'] = "NO_IMAGES_FOUND"
+    else:
+        response['success'] = False
+        response['output'] = "INVALID_URL"
+
+    return  response
 
 
 
