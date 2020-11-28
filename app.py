@@ -1,7 +1,8 @@
 from flask import Flask, request
 from flask_cors import CORS, cross_origin
 
-from scrapper import scrape, urlExists
+from scrapper import Scrapper, urlExists
+from customScrapper import CustomScrapper, isInCustomSites
 
 app = Flask(__name__)
 CORS(app, support_credentials=True)
@@ -18,11 +19,22 @@ def scrapeURL():
     data = request.json
     url = data['url']
     response = dict()
-    if urlExists(url):
-        image_urls = scrape(url)
-        if len(image_urls) > 0:
+    scrapper = None
+
+    if urlExists(url, timeout=20, checkIsImage=False):
+        if isInCustomSites(url):
+            scrapper = CustomScrapper()
+            response['custom'] = True
+        else:
+            scrapper = Scrapper()
+            response['custom'] = False
+
+
+        image_or_data_urls = scrapper.scrape(url)
+        if len(image_or_data_urls) > 0:
             response['success'] = True
-            response['output'] = image_urls
+            response['output'] = image_or_data_urls
+            response['stats'] = scrapper.stats
         else:
             response['success'] = False
             response['output'] = "NO_IMAGES_FOUND"
@@ -30,7 +42,7 @@ def scrapeURL():
         response['success'] = False
         response['output'] = "INVALID_URL"
 
-    return  response
+    return response
 
 
 
