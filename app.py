@@ -14,8 +14,6 @@ app.wsgi_app = WhiteNoise(app.wsgi_app, root='static/')
 CORS(app, support_credentials=True)
 
 
-
-
 @app.route('/health')
 def health():
     return 'Hello World!'
@@ -64,7 +62,7 @@ def classifyImage():
             img = BytesIO(response_)
 
         else:
-            response_ = requests.get(url, timeout=5)
+            response_ = requests.get(url, timeout=5, verify=False)
             img = BytesIO(response_.content)
 
         response['prediction'] = isImageXray(img, return_bool=False)

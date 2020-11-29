@@ -9,11 +9,14 @@ import time
 from itertools import compress
 from xrayClassification import isImageXray, getModelStats
 from io import BytesIO
+import logging
+
+logging.captureWarnings(True)
 
 
 def isXrayLungImage_(link):
     try:  # in rare cases, response might get an error, wrap in try except to avoid this
-        response = requests.get(link, timeout=5)
+        response = requests.get(link, timeout=5, verify=False)
         img = BytesIO(response.content)
         res = isImageXray(img)
         return res
@@ -27,7 +30,7 @@ class Scrapper:
         self.dir = dir
         self.url = None
         self.stats = {}
-        self.useModel=useModel
+        self.useModel = useModel
 
     def scrape(self, url):
         self.url = url
@@ -36,20 +39,20 @@ class Scrapper:
             self.stats['model'] = getModelStats()
 
         start = time.time()
-        r = requests.get(url)   # send request to fetch website
+        r = requests.get(url)  # send request to fetch website
         html = r.text
         soup = BeautifulSoup(html, 'lxml')
-        images = soup.findAll('img')    # extract all image tags
+        images = soup.findAll('img')  # extract all image tags
         self.stats['full_load_time'] = time.time() - start
         self.stats['no_of_images'] = len(images)
 
         start = time.time()
-        images = list(map(self.repairLinks, images))    # repair broken links
-
+        images = list(map(self.repairLinks, images))  # repair broken links
 
         # utilize multiple thread for faster link validation
-        with concurrent.futures.ThreadPoolExecutor(max_workers=None ) as pool:   # max_workers=None to use max threads on machine
-            images_filter = list(pool.map(self.removeInvalidLinks, images))  # remove invalid links
+        with concurrent.futures.ThreadPoolExecutor(
+                max_workers=None) as pool:  # max_workers=None to use max threads on machine
+            images_filter = list(pool.map(removeInvalidLinks, images))  # remove invalid links
         images = list(compress(images, images_filter))
 
         self.stats['image_processing_time'] = time.time() - start
@@ -60,8 +63,9 @@ class Scrapper:
 
         sources = list(map(self.repairLinks, sources))
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=None) as pool:  # max_workers=None to use max threads on machine
-            sources_filter = list(pool.map(self.removeInvalidLinks, sources))
+        with concurrent.futures.ThreadPoolExecutor(
+                max_workers=None) as pool:  # max_workers=None to use max threads on machine
+            sources_filter = list(pool.map(removeInvalidLinks, sources))
         sources = list(compress(sources, sources_filter))
 
         self.stats['sources_processing_time'] = time.time() - start
@@ -73,10 +77,10 @@ class Scrapper:
         self.stats['no_of_links'] = len(links)
         links = list(map(self.repairLinks, links))  # repair broken links
         links = list(dict.fromkeys(links))  # remove duplicate links
-        with concurrent.futures.ThreadPoolExecutor(max_workers=None) as pool:  # max_workers=None to use max threads on machine
-            links_filter = list(pool.map(self.removeInvalidLinks, links))    # remove invalid links
+        with concurrent.futures.ThreadPoolExecutor(
+                max_workers=None) as pool:  # max_workers=None to use max threads on machine
+            links_filter = list(pool.map(removeInvalidLinks, links))  # remove invalid links
         links = list(compress(links, links_filter))
-
 
         self.stats['links_processing_time'] = time.time() - start
 
@@ -121,12 +125,12 @@ class Scrapper:
             newObj = {"alt": link.get('alt')}
             if len(src) < 15 or type(search(badLinkPattern, src.lower())).__name__ == 'Match':
                 return link
-            if "http" in src or 'https' in src: # if link is okay
+            if "http" in src or 'https' in src:  # if link is okay
                 return link
-            else:   # attempt to repair link
+            else:  # attempt to repair link
                 repaired = 'https://' + src
-                if not urlExists(repaired, check_is_image=False): # if link is not valid, try another repair method
-                    repaired = 'https://'+self.url.split('/')[2]+src
+                if not urlExists(repaired, check_is_image=False):  # if link is not valid, try another repair method
+                    repaired = 'https://' + self.url.split('/')[2] + src
                 newObj['src'] = repaired
                 return newObj
         else:
@@ -150,43 +154,45 @@ class Scrapper:
             return True
         # if image cannot be detected from link and alt use ml model
         if self.useModel:
-            try:    # in rare cases, response might get an error, wrap in try except to avoid this
-                response = requests.get(src, timeout=5)
+            try:  # in rare cases, response might get an error, wrap in try except to avoid this
+                response = requests.get(src, timeout=5, verify=False)
                 img = BytesIO(response.content)
                 return isImageXray(img)
             except:
                 return False
-        else: return False
-
-    # https: // prod - images - static.radiopaedia.org / images / 27422175 / 219
-    # ad938e9c990af7df415ffa154b9_thumb.jpeg
-    def removeInvalidLinks(self, link):
-        regexImagePattern = r'(jpg|jpeg|png|image|images|uploads|upload|picture|photo|photos)'  # regex pattern to check if link is an image
-        if type(link).__name__ == 'Tag' or isinstance(link, dict):
-            src_ = getSrc(link)
-            if isinstance(src_, str) and type(search(regexImagePattern, src_.lower())).__name__ == 'Match': # if link is an image
-                if urlExists(src_, check_is_image=False):  # if link is an image and url is valid
-                    return True
-                else: return False
-            else: return False
         else:
-            if isinstance(link, str) and type(search(regexImagePattern, link.lower())).__name__ == 'Match':
-                if urlExists(link, check_is_image=False):  # if link is an image and url is valid
-                    return True
-                else:
-                    return False
+            return False
+
+
+def removeInvalidLinks(link):
+    regexImagePattern = r'(jpg|jpeg|png|image|images|uploads|upload|picture|photo|photos)'  # regex pattern to check if link is an image
+    if type(link).__name__ == 'Tag' or isinstance(link, dict):
+        src_ = getSrc(link)
+        if isinstance(src_, str) and type(
+                search(regexImagePattern, src_.lower())).__name__ == 'Match':  # if link is an image
+            if urlExists(src_, check_is_image=False):  # if link is an image and url is valid
+                return True
             else:
                 return False
+        else:
+            return False
+    else:
+        if isinstance(link, str) and type(search(regexImagePattern, link.lower())).__name__ == 'Match':
+            if urlExists(link, check_is_image=False):  # if link is an image and url is valid
+                return True
+            else:
+                return False
+        else:
+            return False
 
 
 def urlExists(url, timeout=5, check_is_image=True):  # check if the url is an image or redirects to one
     try:
         url_ = url
         image_formats = ("image/png", "image/jpeg", "image/jpg")
-        if type(url).__name__ == 'Tag' or isinstance(url, dict): url_ = url.get('src') or url.get('data-src') or ""
-
-        r = requests.head(url_, allow_redirects=True, timeout=timeout)
-        if r.status_code == 200:
+        if type(url).__name__ == 'Tag' or isinstance(url, dict): url_ = getSrc(url)
+        r = requests.head(url_, allow_redirects=True, timeout=timeout, verify=False)
+        if r.status_code == 200 or r.status_code==405:
             if check_is_image and r.headers["content-type"] in image_formats:
                 return True
             elif not check_is_image:
@@ -201,9 +207,10 @@ def getImageName(src):  # get image name from link
     return src.split('/')[-1].split('?')[0]
 
 
-def isDataUrl(src): # check if link is data url
+def isDataUrl(src):  # check if link is data url
     dataURLPattern = """^\s*data:([a-z]+\/[a-z]+(;[a-z\-]+\=[a-z\-]+)?)?(;base64)?,[a-z0-9\!\$\&\'\,\(\)\*\+\,\;\=\-\.\_\~\:\@\/\?\%\s]*\s*"""
     return bool(re.match(dataURLPattern, src))
+
 
 def getSrc(link):
     if link.get('src') is not None:
@@ -215,10 +222,14 @@ def getSrc(link):
 
 
 def addFileSize(file):  # gets file size given url
-    response = requests.head(file['url'], allow_redirects=True)
-    size = response.headers.get('content-length', 0)
-    file['size'] = size
-    return file
+    try:
+        response = requests.head(file['url'], allow_redirects=True, timeout=5, verify=False)
+        size = response.headers.get('content-length', 0)
+        file['size'] = size
+        return file
+    except:
+        file['size'] = 0
+        return file
 
 
 def getTotalSize(files):

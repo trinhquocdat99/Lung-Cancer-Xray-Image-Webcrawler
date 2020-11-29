@@ -8,7 +8,7 @@ import onnxruntime as ort
 """
     0 - not xray
     1 - xray
-    accuracy(tested on 166 images) - 0.9940
+    accuracy(tested on 346 images) - 0.9769
 """
 
 model = ort.InferenceSession('model/xray_image_classification.onnx')
@@ -40,4 +40,8 @@ def isImageXray(image_path, return_bool=True):
 
 
 def getModelStats():
-    return {'model_name': 'xray_image_classification.onnx', "accuracy": "99.40%", 'inference_time': '0.1s'}
+    return {'model_name': 'xray_image_classification.onnx', "accuracy": "97.69%", 'inference_time': '0.1s'}
+
+
+# print(isImageXray("x-ray-image-of-lung-cancer-tumor.jpg", return_bool=False))
+# print(isImageXray("IM-0037-0001.jpeg", return_bool=False))
