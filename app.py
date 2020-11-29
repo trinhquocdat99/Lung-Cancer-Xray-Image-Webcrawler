@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, render_template
 from flask_cors import CORS, cross_origin
 
 from scrapper import Scrapper, urlExists, isDataUrl
@@ -13,7 +13,13 @@ CORS(app, support_credentials=True)
 
 
 @app.route('/')
-def hello_world():
+def webApp():
+    return render_template('build/index.html')
+
+
+
+@app.route('/health')
+def health():
     return 'Hello World!'
 
 

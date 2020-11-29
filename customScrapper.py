@@ -91,7 +91,6 @@ def removeInvalidLinks(link):
             if not isDownloadableLink(src_, link.get('alt')):
                 return False
             if urlExists(src_):  # if link is an image and url is valid
-                print("link is valid")
                 return True
             else: return False
         else: return False

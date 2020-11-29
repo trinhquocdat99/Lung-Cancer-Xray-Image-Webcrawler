@@ -1,0 +1,25 @@
+{
+  "short_name": "Xray Web Crawler",
+  "name": "Extract xray images from any url",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "16x32 32x32",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo140.png",
+      "type": "image/png",
+      "sizes": "140x215"
+    },
+    {
+      "src": "logo560.png",
+      "type": "image/png",
+      "sizes": "560x862"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}
