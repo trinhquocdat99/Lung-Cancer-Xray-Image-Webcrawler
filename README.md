@@ -44,7 +44,7 @@
     <li>
         <a href="#installation">Installation</a>
     </li>
-    <li><a href="#script-basic-explanation">Script Basic Explanation</a></li>
+    <li><a href="#basic-script-explanation">Script Basic Explanation</a></li>
   </ol>
 </details>
 
@@ -53,7 +53,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+[![Product Name Screen Shot][product-screenshot]](https://xray-web-crawler.herokuapp.com/)
 
 Web Crawler created using python to crawl xray lung cancer images given any url.
  The crawled data are visualized an a web interface. There is also a ```customCrawler.py``` script to download ```.mat``` files, these are also visualized on the web inference.
@@ -83,7 +83,7 @@ Web Crawler created using python to crawl xray lung cancer images given any url.
 
 
 <!-- SCRAPPING -->
-## Script Basic Explanation
+## Basic Script Explanation
 
 ### ```scrapper.py```
 Main scrapping script
