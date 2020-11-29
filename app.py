@@ -7,8 +7,10 @@ from xrayClassification import isImageXray
 import requests
 from io import BytesIO
 from urllib.request import urlopen
+from whitenoise import WhiteNoise
 
 app = Flask(__name__)
+app.wsgi_app = WhiteNoise(app.wsgi_app, root='static/')
 CORS(app, support_credentials=True)
 
 
