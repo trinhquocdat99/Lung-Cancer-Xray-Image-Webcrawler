@@ -18,14 +18,14 @@
 <!-- PROJECT LOGO -->
 <br />
 <p align="center">
-  <a href="https://xray-web-crawler.herokuapp.com/">
-    <img src="static/logo560.png" alt="Logo" width="80" height="80">
+  <a href="https://xray-web-crawler.herokuapp.com/" target="_blank">
+    <img src="static/logo560.png" alt="Logo" width="70" height="107">
   </a>
 
   <h3 align="center">Crawl X-ray Image Data of Lung Cancer</h3>
 
   <p align="center">
-    <a href="https://xray-web-crawler.herokuapp.com/">View Demo</a>
+    <a href="https://xray-web-crawler.herokuapp.com/" target="_blank">View Demo</a>
   </p>
 </p>
 
@@ -56,8 +56,8 @@
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
 Web Crawler created using python to crawl xray lung cancer images given any url.
- The crawled data are visualized an a web interface. There is also a ```customCrawler.py``` script to download .mat files, these are also visualized on the web inference.
- Images will be identified as an xray using a simple CNN Xray classification model trained from scratch with accuracy of ```97.69```
+ The crawled data are visualized an a web interface. There is also a ```customCrawler.py``` script to download ```.mat``` files, these are also visualized on the web inference.
+ Images will be identified as an xray using a simple CNN Xray classification model trained from scratch with accuracy of ```97.69%```
 ### Built With
 * [Python](https://phython.org)
 * [Flask](https://palletsprojects.com/p/flask/)
@@ -76,9 +76,9 @@ Web Crawler created using python to crawl xray lung cancer images given any url.
    ```sh
    pip install -r requirements.txt
    ```
-3 Run app with flask
+3. Run app with flask
     ```sh
-        python -m flask run
+    python -m flask run
     ```
 
 
@@ -105,6 +105,8 @@ Custom scrapping script to extract .mat files
 * Filter links with regex
 * Remove duplicates
 * Get file name and file size
+
+
 Regex might need to be adjusted for other URLs
 
 
@@ -123,7 +125,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 [forks-url]: https://github.com/trinhquocdat99/Lung-Cancer-Xray-Image-Webcrawler/network/members
 [stars-shield]: https://img.shields.io/github/stars/trinhquocdat99/Lung-Cancer-Xray-Image-Webcrawler.svg?style=for-the-badge
 [stars-url]: https://github.com/trinhquocdat99/Lung-Cancer-Xray-Image-Webcrawler/stargazers
-[issues-shield]: https://img.shields.io/github/issues/othneildrew/Lung-Cancer-Xray-Image-Webcrawler.svg?style=for-the-badge
+[issues-shield]: https://img.shields.io/github/issues/trinhquocdat99/Lung-Cancer-Xray-Image-Webcrawler.svg?style=for-the-badge
 [issues-url]: https://github.com/trinhquocdat99/Lung-Cancer-Xray-Image-Webcrawler/issues
 [license-shield]: https://img.shields.io/github/license/trinhquocdat99/Lung-Cancer-Xray-Image-Webcrawler.svg?style=for-the-badge
 [license-url]: https://github.com/trinhquocdat99/Best-README-Template/blob/master/LICENSE.txt
