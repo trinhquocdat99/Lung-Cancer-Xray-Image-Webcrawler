@@ -12,10 +12,6 @@ app = Flask(__name__)
 CORS(app, support_credentials=True)
 
 
-@app.route('/')
-def webApp():
-    return render_template('build/index.html')
-
 
 
 @app.route('/health')
@@ -76,6 +72,11 @@ def classifyImage():
 
     return response
 
+
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def webApp(path):
+    return render_template('build/index.html')
 
 
 if __name__ == '__main__':
