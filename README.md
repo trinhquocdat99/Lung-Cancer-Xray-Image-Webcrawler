@@ -25,7 +25,7 @@
   <h3 align="center">Crawl X-ray Image Data of Lung Cancer</h3>
 
   <p align="center">
-    <a href="https://xray-web-crawler.herokuapp.com/" target="_blank">View Demo</a>
+    <a href="https://x-ray-web-crawler.herokuapp.com/" target="_blank">View Demo</a>
   </p>
 </p>
 
